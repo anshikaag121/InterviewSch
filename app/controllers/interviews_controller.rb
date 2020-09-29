@@ -16,10 +16,10 @@ class InterviewsController < ApplicationController
         if @interview.save
             @name = Participant.find(@interview.intervieweeid).email
             puts @name
-            UserMailer.with(user: @interview).schedule.deliver_now
+            #UserMailer.with(user: @interview).schedule.deliver_now
             MailJob.perform_later(@interview, "schedule")
             scheduledtime = @interview.start_t - 5.hours - 30.minutes - 30.minutes
-            UserMailer.with(user: @interview).reminder.deliver_later(wait_until: scheduledtime)
+            #UserMailer.with(user: @interview).reminder.deliver_later(wait_until: scheduledtime)
             MailJob.set(wait_until: scheduledtime).perform_later(@interview, "reminder")
             redirect_to interview_path(@interview)
         else

@@ -7,6 +7,7 @@ class UserMailer < ApplicationMailer
           end
       def schedule
           mail(to: @interviewee.email, subject: 'Your interview has been scheduled')
+
       end
       def update
           mail(to: @interviewee.email, subject: 'Your interview has been updated')
