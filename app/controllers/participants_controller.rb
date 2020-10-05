@@ -1,0 +1,79 @@
+class ParticipantsController < ApplicationController
+    skip_before_action  :verify_authenticity_token
+    before_action :set_participant, only: [:show, :edit, :update, :destroy]
+    require 'Func'
+    def index
+        @participant = Participant.all
+        render json: @participant
+    end
+    def new
+        @participant = Participant.new
+        @user = User.new
+    end
+    def show
+        @user = User.find_by userid: @participant.id
+         resume = ""
+                if @participant.ptype == 'Interviewee'
+                   # resume = @user.resume
+                end
+        render json: @participant
+    end
+    def create
+        @participant = Participant.new(participant_params)
+        # val = Func.new
+        # response = val.check(params)
+        if @participant.save
+            if (params[:participant][:resume] != nil)
+                params[:participant][:userid] = @participant.id
+                #@user = User.new(user_params)
+                #@user.save
+            end
+            render json: {participant: @participant, user: @user}
+
+        else
+        render json: participant.errors
+        end
+    end
+    def edit
+        @participant = Participant.find(params[:id])
+    end
+    def update
+        val = Func.new
+        response = val.check(params)
+        if response && @participant.update(participant_params)
+            params[:participant][:user_id] = @participant.id
+            @user = User.find_by user_id: @participant.id
+            if (params[:participant][:resume] != nil)
+                params[:participant][:userid] = @participant.id
+                @user = User.update(user_params)
+            end
+            redirect_to participant_path(@participant)
+        else
+            render 'edit'
+        end
+    end
+    def destroy
+        if @participant.present?
+          @user = User.find_by userid: @participant.id
+          @participant.destroy
+          if @user.present?
+            @user.destroy
+          end
+          render json: {msg: "sucess"}
+        else
+            render json: {msg: "not exist"}
+        end
+        #redirect_to participants_path
+    end
+    private
+        def participant_params
+            params.require(:participant).permit(:name, :email, :ptype)
+            params.require(:participant).permit(:name, :email, :ptype)
+        end
+        def user_params
+            params.require(:participant).permit(:resume, :userid)
+        end
+        def set_participant
+            @participant = Participant.find(params[:id])
+        end
+    end

@@ -1,0 +1,25 @@
+<div>
+<p>
+     <strong> Start_Time: </strong>
+     <%= interview.start_t %>
+ </p>
+ <p>
+     <strong> End_Time: </strong>
+     <%= interview.end_t %>
+ </p>
+ <p>
+     <strong> Interviewee_Name: </strong>
+     <%= Participant.find(interview.intervieweeid).name %> |
+     <%= link_to 'show details', participant_path(Participant.find(interview.intervieweeid)) %>
+ </p>
+ <p>
+     <strong> Interviewer_Name: </strong>
+     <%= Participant.find(interview.interviewerid).name %> |
+     <%= link_to 'show details', participant_path(Participant.find(interview.interviewerid)) %>
+ </p>
+ <p>
+     <%= link_to 'Edit', edit_interview_path(interview) %> |
+     <%= link_to 'Destroy', interview_path(interview), method: :delete, data: { confirm: 'Are you sure?' } %>
+
+ </p>
+</div>
