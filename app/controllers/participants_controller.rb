@@ -4,7 +4,7 @@ class ParticipantsController < ApplicationController
     require 'Func'
     def index
         @participant = Participant.all
-        # render json: @participant
+        render json: @participant
     end
     def new
         @participant = Participant.new
@@ -12,22 +12,26 @@ class ParticipantsController < ApplicationController
     end
     def show
         @user = User.find_by userid: @participant.id
-        render json: {participant: @participant, user: @user}
+         resume = ""
+                if @participant.ptype == 'Interviewee'
+                   # resume = @user.resume
+                end
+        render json: @participant
     end
     def create
         @participant = Participant.new(participant_params)
-        val = Func.new
-        response = val.check(params)
-        if response && @participant.save
+        # val = Func.new
+        # response = val.check(params)
+        if @participant.save
             if (params[:participant][:resume] != nil)
                 params[:participant][:userid] = @participant.id
                 #@user = User.new(user_params)
                 #@user.save
             end
-            redirect_to participant_path(@participant)
+            render json: {participant: @participant, user: @user}
 
         else
-        render 'new'
+        render json: participant.errors
         end
     end
     def edit
@@ -55,8 +59,11 @@ class ParticipantsController < ApplicationController
           if @user.present?
             @user.destroy
           end
+          render json: {msg: "sucess"}
+        else
+            render json: {msg: "not exist"}
         end
-        redirect_to participants_path
+        #redirect_to participants_path
     end
     private
         def participant_params

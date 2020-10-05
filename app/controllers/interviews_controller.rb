@@ -4,9 +4,10 @@ class InterviewsController < ApplicationController
     before_action :set_participants, only: [:new, :create, :edit, :update]
     def index
         @interview = Interview.all
+        render json: @interview
     end
     def show
-        # render json: @interview
+          render json: @interview
     end
     def new
         @interview = Interview.new
@@ -31,11 +32,12 @@ class InterviewsController < ApplicationController
 
     def update
         if @interview.update(interview_params)
-            UserMailer.with(user: @interview).update.deliver_now
-            MailJob.perform_later(@interview, "update")
-            scheduledtime = @interview.start_t - 5.hours - 30.minutes - 30.minutes
-            MailJob.perform_later(@interview, "reminder")
-            redirect_to interview_path(@interview)
+            # UserMailer.with(user: @interview).update.deliver_now
+            # MailJob.perform_later(@interview, "update")
+            # scheduledtime = @interview.start_t - 5.hours - 30.minutes - 30.minutes
+            # MailJob.perform_later(@interview, "reminder")
+            #   redirect_to interview_path(@interview)
+            render json: @interview
         else
         render 'edit'
         end
@@ -43,8 +45,11 @@ class InterviewsController < ApplicationController
     def destroy
         if @interview.present?
             @interview.destroy
+            render json: {msg: "sucess"}
+        else
+            render json: {msg: "Not exist"}
         end
-        redirect_to interviews_path
+        # redirect_to interviews_path
     end
     private
         def interview_params
